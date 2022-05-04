@@ -5,6 +5,7 @@ from omegaconf import OmegaConf
 import numpy as np
 import torch
 from PIL import Image
+import time
 
 from torchvision.utils import make_grid
 from einops import rearrange
@@ -108,7 +109,8 @@ def run(prompt, steps, width, height, images, scale):
     # to image
     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
     
-    Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{prompt.replace(" ", "-")}.png'))
+    Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{prompt.replace(" ", "-")}-{int(time.time())}.png'))
     return(Image.fromarray(grid.astype(np.uint8)),all_samples_images,None)
 
-run('A Swedish chef going "borka borka"', 50, 256, 256, 4, 6.0)
+if False:
+    run('A Swedish chef going "borka borka"', 50, 256, 256, 4, 6.0)
