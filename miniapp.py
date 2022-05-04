@@ -105,7 +105,8 @@ def run(prompt, steps, width, height, images, scale):
     # additionally, save as grid
     grid = torch.stack(all_samples, 0)
     grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-    grid = make_grid(grid, nrow=2)
+    gridrows = 2 if opt.n_samples <= 4 else 4
+    grid = make_grid(grid, nrow=gridrows)
     # to image
     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
     
