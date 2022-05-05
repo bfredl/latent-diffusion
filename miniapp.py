@@ -43,7 +43,7 @@ def loader():
     #device = torch.device("cpu")
     model = model.to(device)
 
-def run(prompt, steps, width, height, images, scale):
+def run(prompt, steps, width, height, images, scale, is_movie=False):
     opt = SimpleNamespace(
         prompt = prompt,
         outdir='outputs',
@@ -74,6 +74,9 @@ def run(prompt, steps, width, height, images, scale):
     sample_path = os.path.join(outpath, "samples")
     os.makedirs(sample_path, exist_ok=True)
     base_count = len(os.listdir(sample_path))
+    if is_movie:
+        movie_path = os.path.join(sample_path, f"{promptnamm}-{namm}")
+        os.makedirs(moive_path, exist_ok=True)
 
     all_samples=list()
     all_samples_images=list()
@@ -87,15 +90,16 @@ def run(prompt, steps, width, height, images, scale):
                     c = model.get_learned_conditioning(opt.n_samples * [prompt])
                     shape = [4, opt.H//8, opt.W//8]
                     def img_callback(the_img, counter):
-                        x_the_img = model.decode_first_stage(the_img)
-                        x_the_img = torch.clamp((x_the_img+1.0)/2.0, min=0.0, max=1.0)
-                        grid = x_the_img
-                        #grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-                        gridrows = 2 if opt.n_samples <= 4 else 4
-                        grid = make_grid(grid, nrow=gridrows)
-                        # to image
-                        grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                        Image.fromarray(grid.astype(np.uint8)).save(os.path.join(sample_path, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
+                        if is_movie:
+                            x_the_img = model.decode_first_stage(the_img)
+                            x_the_img = torch.clamp((x_the_img+1.0)/2.0, min=0.0, max=1.0)
+                            grid = x_the_img
+                            #grid = rearrange(grid, 'n b c h w -> (n b) c h w')
+                            gridrows = 2 if opt.n_samples <= 4 else 4
+                            grid = make_grid(grid, nrow=gridrows)
+                            # to image
+                            grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                            Image.fromarray(grid.astype(np.uint8)).save(os.path.join(movie_path, f'{n:02d}-{counter:03d}.png'))
 
                     samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
                                                     conditioning=c,
