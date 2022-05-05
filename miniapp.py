@@ -95,7 +95,7 @@ def run(prompt, steps, width, height, images, scale):
                         grid = make_grid(grid, nrow=gridrows)
                         # to image
                         grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                        Image.fromarray(the_img.astype(np.uint8)).save(os.path.join(outpath, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
+                        Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
 
                     samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
                                                     conditioning=c,
