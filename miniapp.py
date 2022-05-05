@@ -76,7 +76,7 @@ def run(prompt, steps, width, height, images, scale, is_movie=False):
     base_count = len(os.listdir(sample_path))
     if is_movie:
         movie_path = os.path.join(sample_path, f"{promptnamm}-{namm}")
-        os.makedirs(moive_path, exist_ok=True)
+        os.makedirs(movie_path, exist_ok=True)
 
     all_samples=list()
     all_samples_images=list()
