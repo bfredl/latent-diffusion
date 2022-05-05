@@ -43,7 +43,7 @@ def loader():
     #device = torch.device("cpu")
     model = model.to(device)
 
-def run(prompt, steps, width, height, images, scale, is_movie=False):
+def run(prompt, steps, width, height, images, scale, is_movie=False, gridrows=None):
     opt = SimpleNamespace(
         prompt = prompt,
         outdir='outputs',
@@ -77,6 +77,8 @@ def run(prompt, steps, width, height, images, scale, is_movie=False):
     if is_movie:
         movie_path = os.path.join(sample_path, f"{promptnamm}-{namm}")
         os.makedirs(movie_path, exist_ok=True)
+    if gridrows is None:
+        gridrows = 2 if opt.n_samples <= 4 else 4
 
     all_samples=list()
     all_samples_images=list()
@@ -95,7 +97,6 @@ def run(prompt, steps, width, height, images, scale, is_movie=False):
                             x_the_img = torch.clamp((x_the_img+1.0)/2.0, min=0.0, max=1.0)
                             grid = x_the_img
                             #grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-                            gridrows = 2 if opt.n_samples <= 4 else 4
                             grid = make_grid(grid, nrow=gridrows)
                             # to image
                             grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
@@ -126,7 +127,6 @@ def run(prompt, steps, width, height, images, scale, is_movie=False):
     # additionally, save as grid
     grid = torch.stack(all_samples, 0)
     grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-    gridrows = 2 if opt.n_samples <= 4 else 4
     grid = make_grid(grid, nrow=gridrows)
     # to image
     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
