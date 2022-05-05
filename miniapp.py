@@ -89,7 +89,8 @@ def run(prompt, steps, width, height, images, scale):
                     def img_callback(the_img, counter):
                         print(the_img.shape)
                         os.sssshape = the_img
-                        grid = rearrange(the_img, 'n b c h w -> (n b) c h w')
+                        grid = the_img
+                        #grid = rearrange(grid, 'n b c h w -> (n b) c h w')
                         gridrows = 2 if opt.n_samples <= 4 else 4
                         grid = make_grid(grid, nrow=gridrows)
                         # to image
