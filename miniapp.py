@@ -88,14 +88,15 @@ def run(prompt, steps, width, height, images, scale):
                     shape = [4, opt.H//8, opt.W//8]
                     def img_callback(the_img, counter):
                         print(the_img.shape)
-                        os.sssshape = the_img
-                        grid = the_img
+                        x_the_img = model.decode_first_stage(the_img)
+                        x_the_img = torch.clamp((x_the_img+1.0)/2.0, min=0.0, max=1.0)
+                        grid = x_the_img
                         #grid = rearrange(grid, 'n b c h w -> (n b) c h w')
                         gridrows = 2 if opt.n_samples <= 4 else 4
                         grid = make_grid(grid, nrow=gridrows)
                         # to image
                         grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                        Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
+                        Image.fromarray(grid.astype(np.uint8)).save(os.path.join(sample_path, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
 
                     samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
                                                     conditioning=c,
