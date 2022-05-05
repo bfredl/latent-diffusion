@@ -55,6 +55,8 @@ def run(prompt, steps, width, height, images, scale):
         plms=True
     )
 
+    namm = int(time.time())
+
     if opt.plms:
         opt.ddim_eta = 0
         sampler = PLMSSampler(model)
@@ -65,6 +67,7 @@ def run(prompt, steps, width, height, images, scale):
     outpath = opt.outdir
 
     prompt = opt.prompt
+    promptnamm = prompt.replace(" ", "-")
 
     sample_path = os.path.join(outpath, "samples")
     os.makedirs(sample_path, exist_ok=True)
@@ -81,11 +84,25 @@ def run(prompt, steps, width, height, images, scale):
                 for n in range(opt.n_iter):
                     c = model.get_learned_conditioning(opt.n_samples * [prompt])
                     shape = [4, opt.H//8, opt.W//8]
+                    counter = 0
+                    def img_callback(the_img):
+                        nonlocal counter
+                        counter += 1
+                        print(the_img.shape)
+                        os.sssshape = the_img
+                        grid = rearrange(the_img, 'n b c h w -> (n b) c h w')
+                        gridrows = 2 if opt.n_samples <= 4 else 4
+                        grid = make_grid(grid, nrow=gridrows)
+                        # to image
+                        grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
+                        Image.fromarray(the_img.astype(np.uint8)).save(os.path.join(outpath, f'{promptnamm}-{namm}-{n}-{counter:02d}.png'))
+
                     samples_ddim, _ = sampler.sample(S=opt.ddim_steps,
                                                     conditioning=c,
                                                     batch_size=opt.n_samples,
                                                     shape=shape,
                                                     verbose=False,
+                                                    img_callback=img_callback,
                                                     unconditional_guidance_scale=opt.scale,
                                                     unconditional_conditioning=uc,
                                                     eta=opt.ddim_eta)
@@ -110,7 +127,7 @@ def run(prompt, steps, width, height, images, scale):
     # to image
     grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
     
-    Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{prompt.replace(" ", "-")}-{int(time.time())}.png'))
+    Image.fromarray(grid.astype(np.uint8)).save(os.path.join(outpath, f'{promptnamm}-{namm}.png'))
     return(Image.fromarray(grid.astype(np.uint8)),all_samples_images,None)
 
 if False:
