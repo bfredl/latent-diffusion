@@ -35,11 +35,13 @@ def load_model_from_config(config, ckpt, verbose=False, is_cuda=False):
     model.eval()
     return model
 
-config = OmegaConf.load("latent-diffusion/configs/latent-diffusion/txt2img-1p4B-eval.yaml")
-model = load_model_from_config(config,model_path_e, is_cuda=True)
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-#device = torch.device("cpu")
-model = model.to(device)
+def loader():
+    global model
+    config = OmegaConf.load("latent-diffusion/configs/latent-diffusion/txt2img-1p4B-eval.yaml")
+    model = load_model_from_config(config,model_path_e, is_cuda=True)
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    #device = torch.device("cpu")
+    model = model.to(device)
 
 def run(prompt, steps, width, height, images, scale):
     opt = SimpleNamespace(
