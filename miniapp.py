@@ -87,7 +87,6 @@ def run(prompt, steps, width, height, images, scale):
                     c = model.get_learned_conditioning(opt.n_samples * [prompt])
                     shape = [4, opt.H//8, opt.W//8]
                     def img_callback(the_img, counter):
-                        print(the_img.shape)
                         x_the_img = model.decode_first_stage(the_img)
                         x_the_img = torch.clamp((x_the_img+1.0)/2.0, min=0.0, max=1.0)
                         grid = x_the_img
