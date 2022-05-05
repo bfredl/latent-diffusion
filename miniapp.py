@@ -86,10 +86,7 @@ def run(prompt, steps, width, height, images, scale):
                 for n in range(opt.n_iter):
                     c = model.get_learned_conditioning(opt.n_samples * [prompt])
                     shape = [4, opt.H//8, opt.W//8]
-                    counter = 0
-                    def img_callback(the_img):
-                        nonlocal counter
-                        counter += 1
+                    def img_callback(the_img, counter):
                         print(the_img.shape)
                         os.sssshape = the_img
                         grid = rearrange(the_img, 'n b c h w -> (n b) c h w')
@@ -133,4 +130,5 @@ def run(prompt, steps, width, height, images, scale):
     return(Image.fromarray(grid.astype(np.uint8)),all_samples_images,None)
 
 if False:
+    loader()
     run('A Swedish chef going "borka borka"', 50, 256, 256, 4, 6.0)
